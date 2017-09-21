@@ -1,0 +1,297 @@
+<div class="container">
+    <div class="row">
+        <div id="Table_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+            <div class="clear"></div>
+            <div class="col-md-12" style="margin-bottom:10px">
+                <div class="col-md-6">
+                    <label>Show
+                    <select name="selectValue" aria-controls="Table" class="form-control " [(ngModel)]="selectValue" (ngModelChange)="selectValue()">
+                      <option value="2">2</option><option value="10">10</option>
+                      <option value="25">25</option><option value="50">50</option>
+                    </select> entries
+                  </label>
+                </div>
+                <div class="col-md-6">
+                    <div align="right">
+                        <label>Supplier</label>
+                        <select class="form-control" aria-controls="Table" name="filtersupp" [(ngModel)]="filtersupp">
+                            <option value="All">All</option>
+                            <option *ngFor="let supply of  supplyInterfaces" value="{{supply.suppliersName}}">{{supply.suppliersName}}</option>
+                        </select>
+                        <label>Product type</label>
+                        <select class="form-control" aria-controls="Table" name="filtertype" [(ngModel)]="filtertype">
+                              <option value="All">All</option>
+                               <option value="Standard">Standard</option>
+                               <option value="Service">Service</option>
+                               <option value="Combination">Combination</option>
+                        </select>
+                        <button type="submit" class="btn btn-default" (click)="CustomSearch(filtersupp,filtertype)">Apply Filter</button>
+                    </div>
+                </div>
+            </div>
+            <div style="float:right"><label>Search:<input type="search"  class="form-control input-sm" placeholder="" aria-controls="Table"  name="filterString" [(ngModel)]="filterString"  ></label></div>
+            <table id="Table" class="table table-striped table-bordered dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="Table_info" style="width: 100%;">
+                <thead>
+                    <tr role="row">
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Product Description</th>
+                        <th>Tax(%)</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let product_top of  product_TopInterfaces | filter:filterString |paginate: {itemsPerPage: selectValue, currentPage: p} | filter: typeSearch | filter: supplerSearch">
+                        <td>{{product_top.productCode }}</td>
+
+                        <td>{{product_top.productName}}</td>
+                        <td>{{product_top.productCategory}}</td>
+                        <td>{{product_top.productDiscription}}</td>
+                        <td>{{product_top.productTax}}</td>
+                        <td>{{product_top.productPriceINR}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a class="btn btn-default" (click)="deleteProduct_Top(product_top._id)" title="" data-original-title="Delete"><i class="fa fa-times"></i></a>
+
+                                <a class="btn btn-default" (click)="transferid(product_top._id)" (click)="ViewModal.open()" data-original-title="View Product"><i class="fa fa-file-text"></i></a>
+                                <a class="btn btn-default" title="" (click)="redirect(product_top._id)" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-default" (click)="ImageModal.open()" *ngIf="product_top.productType === 'Standard'"><i class="fa fa-tasks" data-toggle="tooltip" data-placement="top" title="" data-original-title="Modify Stock"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row ">
+                <div class="col-sm-6 "></div>
+                <div class="col-sm-6 ">
+                    <div class="dataTables_paginate paging_simple_numbers " style="float:right ">
+                        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Button trigger modal -->
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <button type="button" class="btn btn-add btn-lg" class="btn btn-success" (click)="modal.open()"> Add Product  </button>
+        </div>
+        <div class="col-md-6" style="float:right">
+            <button type="button" class="btn btn-success" (click)="sendDownloadRequest()"> Download CSV  </button>
+            <button type="button" class="btn btn-success" (click)="modal2.open()" (click)="readCsvData"> Upload CSV File  </button>
+        </div>
+    </div>
+</div>
+
+
+<!--it is for ADD Product modal -->
+<modal #modal>
+    <form name="form" class="form-horizontal" (submit)="addProduct_Top()">
+        <modal-header>
+            <h4 class="modal-title">Add Product</h4>
+        </modal-header>
+        <modal-body>
+            <div class="form-group">
+                <label>Type</label>
+                <select class="form-control" name="productType" [(ngModel)]="productType" (change)="onSelect($event.target.value)" required="required">
+                       <option  value="Standard" >Standard</option>
+                        <option  value="Service" >Service</option>
+                        <option   value="Combination" >Combination</option>
+                </select>
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard' || 'Service' || 'Combination'">
+                <label>Code</label>
+                <input type="text" name="productCode" [(ngModel)]="productCode" class="form-control" placeholder="Code" required="required">
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard'|| 'Service' || 'Combination' ">
+                <label>Name</label>
+                <input type="text" name="productName" [(ngModel)]="productName" class="form-control" placeholder="Name" required="required">
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard' || 'Service' || 'Combination' ">
+                <label>Category</label>
+                <select class="form-control" name="productCategory" [(ngModel)]="productCategory">
+                       <option value="0">Category</option>
+                       <option *ngFor="let product of categoriesProductInterfaces">{{product.categoryproductName}}</option>
+                </select>
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard'">
+                <label>Supplier</label>
+                <select class="form-control" name="productSupplier" [(ngModel)]="productSupplier">
+                       <option value="0">Supplier</option>
+                       <option *ngFor="let supply of supplyInterfaces">{{supply.suppliersName}}</option>
+                </select>
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard'">
+                <label>Purchase Price (INR)</label>
+                <input type="number" name="productPurchasePrice" [(ngModel)]="productPurchasePrice" class="form-control" placeholder="Purchase Price (INR)">
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard' || 'Service'">
+                <label>Tax(%)</label>
+                <input type="text" name="productTax" [(ngModel)]="productTax" class="form-control" placeholder="Tax(%)">
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard' || 'Service'">
+                <label>Tax Method</label>
+                <select class="form-control" name="productTaxMethod" [(ngModel)]="productTaxMethod">
+                       <option >inclusive</option>
+                        <option >exclusive</option>
+                </select>
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard' || 'Service' || 'Combination'">
+                <label>Price (INR)</label>
+                <input type="number" name="productPriceINR" [(ngModel)]="productPriceINR" class="form-control" required="required">
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard'">
+                <label>Product Unit</label>
+                <input type="text" name="productUnit" [(ngModel)]="productUnit" class="form-control" placeholder="Product Unit">
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard'">
+                <label>Alert Quantity</label>
+                <input type="number" name="productAlertQuantity" [(ngModel)]="productAlertQuantity" class="form-control" placeholder="0">
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard' || 'Service' || 'Combination'">
+                <label>Product Options separated by commas (ex: More Cheese, Cook Well-Done, etc...)</label>
+                <input type="textarea" rows="4" cols="50" class="form-control" name="productDiscription" [(ngModel)]="productDiscription">
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard' || 'Service' || 'Combination'">
+                <label for="exampleInputFile">Attachment</label>
+                <input type="file" name="userfile" id="attachment">
+                <p class="help-block">Accepted files(images|pdf|doc|xls|zip) Max size : 2Mb</p>
+            </div>
+            <div class="form-group" *ngIf="option === 'Standard' || 'Service' || 'Combination'">
+                <ckeditor debounce="500" [(ngModel)]="productParagraph" name="productParagraph">
+                </ckeditor>
+            </div>
+
+        </modal-body>
+        <modal-footer>
+            <button type="button" class="btn btn-default" data-dismiss="modal" (click)="modal.dismiss()">Close</button>
+            <button type="submit" class="btn btn-primary" data-dismiss="modal" (click)="modal.dismiss()">Submit</button>
+        </modal-footer>
+    </form>
+</modal>
+<!--it is used for upload a file  modal -->
+<modal #modal2>
+    <modal-header>
+        <h4 class="modal-title">Add Product</h4>
+    </modal-header>
+    <modal-body>
+        <form>
+            <div class="form-group">
+                <label>Upload CSV file</label>
+                <input type="file" name="userfile" id="ImageInput">
+                <p class="help-block"><a>Download Sample</a></p>
+            </div>
+        </form>
+    </modal-body>
+    <modal-footer>
+        <button type="button" class="btn btn-default" data-dismiss="modal2" (click)="modal2.dismiss()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="modal2.close()">Submit</button>
+    </modal-footer>
+</modal>
+
+
+
+<!--View MOdal-->
+
+<modal #ViewModal>
+    <modal-header>
+        <h4 class="modal-title">View product</h4>
+    </modal-header>
+    <modal-body>
+        <div class="row">
+            <div class="col-md-2">
+                <img>
+            </div>
+            <div class="col-md-5">
+
+                <h3>{{productName}}</h3>
+                <label> <b>Category :</b> {{productCategory}}</label><br>
+                <label> <b>Cost :</b> {{productPurchasePrice}}</label><br>
+                <label> <b>Tax :</b> {{productTax}}</label><br>
+                <label><b>Price :</b> {{productPriceINR | number : '1.2-2'}}</label><br>
+                <label><b>Suppliers :</b> {{productSupplier}}</label><br>
+                <label><b>Product Discription :</b> {{productDiscription}}</label>
+
+            </div>
+            <div class="col-md-5">
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th width="40%">Store</th>
+                            <th width="20%">Quantity</th>
+                            <th width="20%">Price</th>
+                            <th width="20%"><i class="fa fa-eye" aria-hidden="true"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </modal-body>
+    <modal-footer>
+        <button type="button" class="btn btn-default" data-dismiss="ViewModal" (click)="ViewModal.dismiss()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="ViewModal.close()">Submit</button>
+    </modal-footer>
+</modal>
+
+
+<!--Image MOdal-->
+<modal #ImageModal>
+    <form>
+        <modal-header>
+            <h4 class="modal-title">Stock</h4>
+        </modal-header>
+        <modal-body>
+            <div id="stockcontent">
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th width="40%">Store</th>
+                                <th width="30%">Quantity</th>
+                                <th width="30%">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody class="itemslist">
+                            <tr>
+                                <td>sugar</td>
+                                <td><input type="number" id="quantity" store-id="7" value="0"></td>
+                                <td><input type="number" id="pricestr" store-id="7" value="0"></td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th width="40%">Warehouses</th>
+                                <th width="30%">Quantity</th>
+                                <th width="30%">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody class="itemslist">
+                            <tr>
+                                <td>sugar</td>
+                                <td><input type="number" id="quantityw" warehouse-id="3" value="0"></td>
+                                <td><input type="number" id="pricew" value="" disabled="true"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div><input type="hidden" id="prodctID" value="174"></div>
+        </modal-body>
+        <modal-footer>
+            <button type="button" class="btn btn-default" data-dismiss="ImageModal" (click)="ImageModal.dismiss()">Close</button>
+            <button type="button" class="btn btn-primary" (click)="ImageModal.close()">Submit</button>
+        </modal-footer>
+    </form>
+</modal>

@@ -1,0 +1,17 @@
+<div class="container">
+    <div class="row">
+        <div>
+            <ul class="nav navbar-nav">
+                <li><a [routerLink]="['settingDemo']"><i class="fa fa-cogs"></i>Setting</a></li>
+                <li><a [routerLink]="['users']"><i class="fa fa-user"></i>Users</a></li>
+                <li><a [routerLink]="['warehouses']"><i class="fa fa-building" ></i>Warehouses</a></li>
+            </ul>
+        </div><br>
+        <hr>
+        <div>
+            <router-outlet></router-outlet>
+        </div>
+
+    </div>
+
+</div>

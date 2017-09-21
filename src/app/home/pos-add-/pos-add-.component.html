@@ -1,0 +1,403 @@
+<div class="container-fluid" #filterName>
+    <div class="row text-center">
+        <h3>Walk in Customer</h3>
+    </div>
+    <div class="row">
+        <ul>
+            <li data-toggle="tooltip" data-html="true" data-placement="right" title="" style="float:right;cursor: pointer; cursor: hand;" data-original-title="Cancel&nbsp;All">
+                <a (click)="reject()">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </a>
+            </li><br>
+            <li data-toggle="tooltip" data-html="true" data-placement="right" title="" style="float:right;cursor: pointer; cursor: hand;" onclick="history.back(-1)" data-original-title="Return"><a><i class="fa fa-reply" aria-hidden="true"></i></a></li>
+        </ul>
+        <div class="col-md-5 left-side" style="background-color: #ecf0f1;margin-top:10px;padding:10px">
+            <div class="row row-horizon">
+                <!--<span class="holdList"><span class="Hold selectedHold" id="1" onclick="SelectHold(1)" style="   background-color: #6B6B6B;color: #E2E2E2;border-bottom: 3px solid #f65e48;padding:3px 20px">1<span id="Time"></span></span>
+                </span>
+                <span class="Hold pl" onclick="AddHold()" style="   background-color: #6B6B6B;color: #E2E2E2;border-bottom: 3px solid #f65e48;padding:3px 20px">+</span>
+                <span class="Hold pl" onclick="RemoveHold()" style="   background-color: #6B6B6B;color: #E2E2E2;border-bottom: 3px solid #f65e48;padding:3px 20px">-</span>-->
+            </div>
+            <div class="col-xs-8">
+                <h2 style="color: blue;">Choose Client</h2>
+            </div>
+            <div class="col-xs-4 " style="margin-top:20px">
+                <a data-toggle="modal" data-target="#AddCustomer" style="color: blue;cursor: pointer; cursor: hand;" (click)="customermodal.open()">
+                    <span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add New Customer">
+                      <i class="fa fa-square fa-stack-2x grey"></i>
+                      <i class="fa fa-user-plus fa-stack-1x fa-inverse dark-blue"></i>
+                   </span>
+                </a>
+                <a style="cursor: pointer; cursor: hand;color: blue" (click)="receiptmodal.open()">
+                    <span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="" data-original-title="Show last Receipt">
+                      <i class="fa fa-square fa-stack-2x grey"></i>
+                      <i class="fa fa-ticket fa-stack-1x fa-inverse dark-blue"></i>
+                   </span>
+                </a>
+            </div>
+            <div class="col-sm-6">
+                <div class="col-sm-6">
+                    <select class="js-select-options form-control select2-hidden-accessible" tabindex="-1" aria-hidden="true" [(ngModel)]="customerName" name="customerName" #name="ngModel" required>
+                                 <option  >Walk in Customer</option>
+
+                                 <option *ngFor="let customerInterfaces of   customerInterfaces" [value]="customerInterfaces.customerName" >{{customerInterfaces.customerName}}/{{customerInterfaces.customerPhone}}
+
+                                 </option>
+                    </select >
+                </div>
+                <div *ngIf="name.invalid && (name.dirty || name.touched)"
+                class="alert alert-danger">
+
+                    <div *ngIf="name.errors.required">
+                            Name is required.
+                    </div>
+
+               </div>
+              <div class="col-sm-4"  style="color:blue">
+                  <select class="js-select-options form-control select2-hidden-accessible" tabindex="-1" aria-hidden="true" name="POScustomerState" [(ngModel)]="POScustomerState" (ngModelChange)="selectCustomer($event)" >
+                      <option>{{customerState}}</option>
+                      <option *ngFor="let customerInterfaces of   customerInterfaces" [value]="customerInterfaces.customerState">{{customerInterfaces.customerState}}
+
+                      </option>
+                 </select >
+
+              </div>
+
+            </div>
+
+            <div class="col-sm-4" >
+                <select class="js-select-options form-control select2-hidden-accessible" tabindex="-1" aria-hidden="true" name="POSwaiterName" [(ngModel)]="POSwaiterName">
+                <option >without Waiter</option>
+                <option>{{show_waiter}}</option>
+                 <option *ngFor = "let waiter of waitersInterfaces" style="color:blue">{{waiter.waiterName}}</option>
+                            </select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 233px;">
+                              <span class="selection">
+                              <span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-WaiterName-container">
+                              <span class="select2-selection__rendered" id="select2-WaiterName-container" title="without Waiter">without Waiter</span>
+                    <span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>
+                    </span>
+                    </span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                    <span class="hidden" id="waiterS">0</span>
+                </div>
+                <div class="col-xs-5 table-header">
+                    <h4 style="color: blue;">Product</h4>
+                </div>
+                <div class="col-xs-2 table-header">
+                    <h4 style="color: blue;">Price</h4>
+                </div>
+                <div class="col-xs-3 table-header nopadding">
+                    <h4 class="text-left" style="color: blue;">Quantity</h4>
+                </div>
+                <div class="col-xs-2 table-header nopadding">
+                    <h4 style="color: blue;">Total</h4>
+                </div>
+                <!--your changes-->
+                <div style="background-color: #34495e" *ngFor="let pos of AddCart">
+                    <div class="col-xs-5 table-header">
+                        <a (click)="deletePOS(pos.productPriceINR)" style="float:left">
+                            <span class="fa-stack fa-sm productD">
+                        <i class="fa fa-circle fa-stack-2x delete-product"></i>
+                        <i class="fa fa-times fa-stack-1x fa-fw fa-inverse"></i>
+                      </span>
+                        </a>
+                        <p style="color: blue;">{{pos.productName}}</p>
+                    </div>
+                    <div class="col-xs-2 table-header">
+                        <p style="color: blue;">{{pos.productPriceINR | number : '1.2-2'}}</p>
+
+                    </div>
+                    <div class="col-xs-3 table-header nopadding">
+                        <p style="color: blue;">{{pos.POSquanity}}</p>
+                    </div>
+                    <div class="col-xs-2 table-header nopadding">
+                        <p style="color: blue;">{{pos.price | number : '1.2-2'}}</p>
+
+                    </div>
+
+                </div>
+                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 355px;">
+                    <div id="productList" style="overflow: hidden; width: auto; height: 355px;">
+                        <div class="messageVide" style="color: blue;">Empty List <span style="color: blue;">(Select Product)</span></div>
+                    </div>
+                    <div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 355px;">
+
+                    </div>
+                    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: block; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;">
+
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <div class="table-responsive col-sm-12 totalTab">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td class="active" width="40%">SubTotal</td>
+                                    <td class="whiteBg" width="60%"><span style="color:blue;font-size:30px">{{POSsubtotal  | number : '1.2-2'}}</span> INR <span class="float-right"><b style="color:blue;font-size:30px"><span></span><span> {{count}}</span>
+
+                                        </b>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <div *ngFor=" let product of AddCart">
+
+                                    <tr [hidden]="Statecontent==='MP'|| customerState==='MP'">
+                                        <td class="active">IGST</td>
+                                        <td class="whiteBg">
+                                            <span class="float-right" style="color:blue;font-size:15px">IGST : {{product.IGST}}<b id="RemiseValue" >%</b></span><span class="float-left" style="color:blue;font-size:15px"> {{product.difference | number : '1.2-2'}}</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr *ngIf="Statecontent==='MP' || customerState==='MP'">
+                                        <td class="active">SGST</td>
+                                        <td class="whiteBg">
+                                            <span class="float-right" style="color:blue;font-size:15px">SGST: {{product.SGST}}<b style="word-spacing: 30px;">%</b></span>&nbsp;<span class="float-left" style="color:blue;font-size:15px">{{product.differentSGST  | number : '1.2-2'}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="Statecontent==='MP' || customerState==='MP'">
+                                        <td class="active">CGST</td>
+                                        <td class="whiteBg">
+                                            <span class="float-right" style="color:blue;font-size:15px">CGST : {{product.CGST}}<b >%</b></span><span class="float-left" style="color:blue;font-size:15px">{{product.differentCGST | number : '1.2-2'}}</span>
+                                        </td>
+                                    </tr>
+
+                                </div>
+
+
+                                <tr>
+                                    <td class="active">Total</td>
+                                    <td class="whiteBg light-blue text-bold"><span style="color:blue;font-size:15px"><span> {{this.POSsubtotal| number : '1.2-2'}}</span><span></span> </span> INR</td>
+                                </tr>
+                                <!-- <tr>
+                                    <td> <button type="button" (click)="AddItem()" class="btn btn-success col-md-6 flat-box-btn waves-effect waves-button"><h5 class="text-bold" style="color: blue;">Save Item</h5></button></td>
+
+                                </tr>-->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" (click)="clearSearch()" class="btn btn-danger col-md-6 flat-box-btn waves-effect waves-button"><h5 class="text-bold" style="color: blue;">CANCEL</h5></button>
+                    <button type="button" class="btn btn-success col-md-6 flat-box-btn waves-effect waves-button" data-toggle="modal" data-target="#AddSale"><h5 class="text-bold" style="color: blue;" (click)='payment(paymentmodal.open())' >PAYMENT</h5></button>
+                </div>
+            </div>
+
+            <!--It is Second part of the -->
+            <div class="col-md-7 right-side nopadding" style="background-color: #ecf0f1;">
+                <div class=" row row-horizon ">
+                    <span class="categories selectedGat " style="cursor: pointer; cursor: hand;color: #E2E2E2;border-bottom: 3px solid #f65e48;background-color: #6B6B6B;font-size: 35px; "><a  (click)="onclick()" ><i class="fa fa-home "></i></a></span>
+                    <span class="categories " style="cursor: pointer; cursor: hand; color: #6B6B6B;background-color: #E2E2E2;font-weight: 500;padding-bottom: 7px; border-bottom: 3px solid #6EC89B;border-radius: 3px;display: inline-block;font-size:15px ;padding:15px" *ngFor=" let product of categoriesProductInterfaces ">
+                  <a (click)="onSelect ( product.categoryproductName)" >{{product.categoryproductName  }}</a></span>
+                </div>
+                <div class="input-group stylish-input-group">
+                    <input type="text" id="searchProd" class="form-control" placeholder="Search" name="term" [(ngModel)]="term">
+                    <span class="input-group-addon">
+                </span>
+                </div>
+                <div>
+                    <div style="overflow: hidden; width: auto; height: 600px;">
+                        <div class="col-sm-2 col-xs-4" *ngFor=" let product of product_TopInterfaces | filter: term | filter :dummy | filter: clickon ">
+                            <a (click)="valuepass(product.productName,product.productPriceINR,product.productTax,product.productTaxMethod )">
+                                <div style="background-color: #34495e;cursor: pointer; cursor: hand; ">
+                                    <h5 style="color:white " align="center">{{product.productName }}
+                                    </h5>
+                                    <div class="mask">
+                                        <h5 style="color:white" align="center">{{product.productPriceINR | number : '1.2-2'}}</h5>
+                                        <p style="color:white" align="center">{{product.productDiscription}}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--it is Customer  modal -->
+    <modal #customermodal>
+        <form name="form" class="form-horizontal" (submit)="addCustomer()">
+            <modal-header>
+                <h4 class="modal-title">Add Customer</h4>
+            </modal-header>
+            <modal-body>
+
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" name="customerName" [(ngModel)]="customerName" class="form-control" placeholder="Customer Name" required="">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="customerPhone" [(ngModel)]="customerPhone" class="form-control" placeholder="Phone">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="customerEmail" [(ngModel)]="customerEmail" class="form-control" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" name="customerState" [(ngModel)]="customerState" class="form-control" placeholder="State">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" name="customerAddress" [(ngModel)]="customerAddress" class="form-control" placeholder="Address">
+                </div>
+
+
+
+
+            </modal-body>
+            <modal-footer>
+                <button type="button" class="btn btn-default" data-dismiss="customermodal" (click)="customermodal.dismiss()">Close</button>
+                <button type="submit" class="btn btn-primary" data-dismiss="customermodal" (click)="customermodal.dismiss()">Submit</button>
+            </modal-footer>
+        </form>
+    </modal>
+
+    <modal #paymentmodal>
+        <form name="form" class="form-horizontal" (submit)="payment(this.receiptmodal.open())" (submit)="submitValue(reset())">
+            <modal-header>
+                <h4 class="modal-title">Add Sale</h4>
+            </modal-header>
+            <modal-body>
+
+                <div class="form-group">
+                    <label style="font-size:15px"><span>Customer Name :</span>{{show_customerName}}</label>
+                </div>
+                <div class="form-group">
+                    <span style="font-size:15px">{{count}}<b>Items</b></span>
+                </div>
+                <div class="form-group">
+                    <label>Paid</label>
+                    <span style="font-size:15px"> {{this.POSsubtotal| number : '1.2-2'}}<b >INR</b></span>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select class="form-control" name="paymentMethod" [(ngModel)]="paymentMethod" required="required">
+                  <option  value="Check" >Check</option>
+                  <option  value="Cash" >Cash</option>
+                  <option   value="CreditCard" >Credit Card</option>
+                </select>
+                </div>
+
+                <div class="form-group" [hidden]="paymentMethod!=='Check'">
+                    <label>Check Number</label>
+                    <input type="number" name="checknumber" [(ngModel)]="checknumber" class="form-control">
+                </div>
+                <div class="form-group" [hidden]="paymentMethod!=='CreditCard'">
+                    <div class="form-group" class="col-md-12">
+                        <label>Credit Card Number</label>
+                        <input type="number" name="creditcardnumber" [(ngModel)]="creditcardnumber" class="form-control">
+                    </div>
+                    <div class="form-group" class="col-md-3">
+                        <label>Credit Card Holder</label>
+                        <input type="text" name="creditcardholder" [(ngModel)]="creditcardholder" class="form-control">
+                    </div>
+                    <div class="form-group" class="col-md-3">
+                        <label>Month</label>
+                        <input type="number" name="month" [(ngModel)]="month" class="form-control">
+                    </div>
+                    <div class="form-group" class="col-md-3">
+                        <label>Year</label>
+                        <input type="number" name="year" [(ngModel)]="year" class="form-control">
+                    </div>
+                    <div class="form-group" class="col-md-3">
+                        <label>Code CVV</label>
+                        <input type="number" name="codecvv" [(ngModel)]="codecvv" class="form-control">
+                    </div>
+                </div>
+            </modal-body>
+            <modal-footer>
+                <button type="button" class="btn btn-default" data-dismiss="paymentmodal" (click)="paymentmodal.dismiss()">Close</button>
+                <button type="submit" class="btn btn-primary" data-dismiss="paymentmodal" (click)="paymentmodal.dismiss()">Submit</button>
+            </modal-footer>
+        </form>
+    </modal>
+
+    <!--Recipt Generate -->
+    <modal #receiptmodal>
+        <form name="form" class="form-horizontal">
+            <modal-header>
+                <h4 class="modal-title">Receipt</h4>
+            </modal-header>
+            <modal-body style="overflow:scroll;">
+
+                <div class="form-group">
+                    <label>Date <span>{{ this.date| date: 'yyyy'}}-{{ this.date| date:'MM'}}-{{ this.date| date: 'dd'}} {{this.date| date: 'hh:mm:ss'}}</span></label>
+                </div>
+                <div class="form-group">
+                    <label style="font-size:15px"><span>Customer Name :</span>{{this.show_customerName}}</label>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <table class="table">
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>SubTotal</th>
+
+                        </tr>
+                        <tr *ngFor="let pos of AddCart">
+                            <td>
+                                {{pos.productName}}
+                            </td>
+                            <td>
+                                {{pos.POSquanity}}
+                            </td>
+                            <td>
+                                {{pos.price | number : '1.2-2'}}
+                            </td>
+                        </tr>
+                        <hr>
+                        <tr>
+                            <td>
+                                <label>Total Items</label><span>{{count}}</span>
+                            </td>
+                            <td>
+                                <label>Total <span> {{this.POSsubtotal | number : '1.2-2'}}</span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Grand Total<span>{{this.POSsubtotal| number : '1.2-2'}}</span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td [hidden]="paymentMethod!=='CreditCard'">
+                                <div class="form-group" class="col-md-12">
+                                    <label>Credit Card Number</label><span>{{creditcardnumber}}</span>
+
+                                </div>
+                                <div class="form-group">
+                                    <label>Credit Card Holder</label><span>{{creditcardholder}}</span>
+
+                                </div>
+
+                            </td>
+                            <td [hidden]="paymentMethod!=='Check'">
+                                <div class="form-group">
+                                    <label>Check Number</label> <span>{{checknumber}}</span>
+
+                                </div>
+                            </td>
+                            <td [hidden]="paymentMethod!=='Cash'">
+                                <div class="form-group">
+                                    <label>Paid</label> <span>{{this.POSsubtotal| number : '1.2-2'}}</span>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="form-group">
+                        <h6 align="center">
+                            Thank you for your business
+                        </h6>
+                    </div>
+                </div>
+                <hr>
+            </modal-body>
+            <modal-footer>
+                <button type="button" class="btn btn-default" data-dismiss="receiptmodal" (click)="receiptmodal.dismiss()">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="receiptmodal" (click)="download()">PDF</button>
+                <button type="button" class="btn btn-primary" data-dismiss="receiptmodal">Email</button>
+                <button type="button" class="btn btn-primary" data-dismiss="receiptmodal">Print</button>
+            </modal-footer>
+        </form>
+    </modal>

@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <a class="btn btn-default " onclick="history.back(-1)" style="margin-bottom:10px; float:right">
+                <i class="fa fa-arrow-left"></i> Back</a>
+            <form name="form" class="form-horizontal" (submit)="updateWarehouse()">
+
+
+                <div class="form-group"> <label>Warehouse Name *</label>
+                    <input type="text" name="warehouseName" class="form-control" [ngModel]="warehouseName" required="">
+                </div>
+                <div class="form-group">
+                    <label>Warehouse Phone</label>
+                    <input type="text" name="warehousePhone" class="form-control" [ngModel]="warehousePhone" placeholder="Warehouse Phone">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="warehouseEmail " [ngModel]="warehouseEmail " class="form-control " placeholder="Email ">
+                </div>
+                <div class="form-group ">
+                    <label>Address</label>
+                    <input type="text " name="warehouseAddress" [ngModel]="warehouseAddress" class="form-control " placeholder="Address ">
+                </div>
+
+                <div class="form-group ">
+                    <button type="submit " class="btn btn-success ">Submit</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4 "></div>
+    </div>
+
+</div>

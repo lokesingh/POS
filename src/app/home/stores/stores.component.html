@@ -1,0 +1,95 @@
+<div class="container">
+    <div class="row">
+        <div id="Table_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+            <div class="clear"></div>
+            <div class="dataTables_length" id="Table_length"><label>Show <select [(ngModel)]="selectValue " name="selectValue" aria-controls="Table" class="form-control input-sm"><option value="2">2</option><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div>
+            <div style="float:right"><label>Search:<input type="search" [(ngModel)]="term" class="form-control input-sm" placeholder="" aria-controls="Table"></label></div>
+            <table id="Table" class="table table-striped table-bordered dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="Table_info" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Store Name</th>
+                        <th>Email</th>
+                        <th>Store Phone</th>
+                        <th>Country</th>
+                        <th>State</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let store of  storeInterfaces | filter : term |paginate: {itemsPerPage: selectValue, currentPage: p}">
+
+                        <td class="sorting_1">{{store.storeName}}</td>
+                        <td>{{store.storeEmail}}</td>
+                        <td>{{store.storePhone}}</td>
+                        <td>{{store.storecountry}}</td>
+                        <td>{{store.storeCity}}</td>
+                        <td>{{store.storeAddress}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a class="btn btn-default" (click)="deleteStore(store._id)" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"><i class="fa fa-times"></i></a>
+                                <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="" (click)="routing(store._id)" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-default" data-toggle="tooltip" data-placement="top" (click)="redirect(store._id)" title="" data-original-title="manage Tables"><i class="fa fa-list-ol"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div>
+            <div class="dataTables_paginate paging_simple_numbers " style="float:right ">
+                <pagination-controls (pageChange)="p = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-add btn-lg" class="btn btn-success" (click)="modal.open()">
+     Add Store  </button>
+</div>
+
+
+<!--it is for modal -->
+<modal #modal>
+    <form name="form" class="form-horizontal" (submit)="addStor()">
+        <modal-header>
+            <h4 class="modal-title">Add Store</h4>
+        </modal-header>
+        <modal-body>
+
+            <div class="form-group">
+                <label>Store Name</label>
+                <input type="text" name="storeName" [(ngModel)]="storeName" class="form-control" placeholder="Store Name" required="">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="storeEmail" [(ngModel)]="storeEmail" class="form-control" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label>Store Phone</label>
+                <input type="text" name="storePhone" [(ngModel)]="storePhone" class="form-control" placeholder="Phone">
+            </div>
+            <div class="form-group">
+                <label>Country</label>
+                <input type="text" name="storecountry" [(ngModel)]="storecountry" class="form-control" placeholder="Country">
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" name="storeCity" [(ngModel)]="storeCity" class="form-control" placeholder="City">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" name="storeAddress" [(ngModel)]="storeAddress" class="form-control" placeholder="Address">
+            </div>
+            <div class="form-group">
+                <label>Custome Footer for the receipt</label>
+                <input type="text" name="storeReceipt" class="form-control" [(ngModel)]="storeReceipt" placeholder="Custome Footer for the receipt">
+            </div>
+
+        </modal-body>
+        <modal-footer>
+            <button type="button" class="btn btn-default" data-dismiss="modal" (click)="modal.dismiss()">Close</button>
+            <button type="submit" class="btn btn-primary" data-dismiss="modal" (click)="modal.dismiss()">Submit</button>
+        </modal-footer>
+    </form>
+</modal>
