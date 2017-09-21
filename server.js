@@ -32,13 +32,13 @@ var POS_route=  require('./route/Pos.route');
 var Item_route = require('./route/item.route');
 var path = require('path');
 var jwt = require('jsonwebtoken');
-var port = process.env.PORT || '8000';
+
 var app = express();
 const http = require('http');
 var location1 =   require('./src')
 
  var db = "mongodb://POS:12345@ds127443.mlab.com:27443/pos";
-// var db = "mongodb://localhost/POS";
+
 mongoose.connect(db, function(err, response) {
     if (err) {
         console.log('failed to connected to' + db);
@@ -111,6 +111,5 @@ app.use('/api',store_time_route);
 app.use('/api',collection_Store_route);
 app.use('/api',POS_route);
 app.use('/api',Item_route);
-app.listen(port, function() {
-    console.log("Server started on 8000 server");
-});
+app.listen(3003, '172.104.42.153');
+console.log('Running the server on port:http://172.104.42.153:3003');
